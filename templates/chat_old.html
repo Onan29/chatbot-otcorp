@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbot OTcorp</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.4.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-..."
+    crossorigin="anonymous"
+  />
+
+  <!-- Google Font Inter -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    integrity="sha512-pO1j0b9..."
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- CSS personalizado -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      Chatbot OTcorp
+      <button id="clear-btn" class="btn btn-sm btn-light">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <form class="chat-input" id="chat-form">
+      <input type="text" id="message" placeholder="Escribe tu mensaje…" autocomplete="off" />
+      <button type="submit">
+        <i class="fa-solid fa-paper-plane"></i> Enviar
+      </button>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS opcional -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.4.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-..."
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+    const form     = document.getElementById('chat-form');
+    const input    = document.getElementById('message');
+    const messages = document.getElementById('messages');
+    const clearBtn = document.getElementById('clear-btn');
+
+    clearBtn.addEventListener('click', () => {
+      messages.innerHTML = '';
+      input.focus();
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      // mensaje usuario
+      const userDiv = document.createElement('div');
+      userDiv.className = 'message user';
+      userDiv.innerHTML = `
+        <div class="avatar"><i class="fa-solid fa-user"></i></div>
+        <div class="bubble">${text}</div>
+      `;
+      messages.appendChild(userDiv);
+
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      // petición al backend
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text})
+      });
+      const {response} = await res.json();
+
+      // mensaje bot
+      const botDiv = document.createElement('div');
+      botDiv.className = 'message bot';
+      botDiv.innerHTML = `
+        <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+        <div class="bubble">${response}</div>
+      `;
+      messages.appendChild(botDiv);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
+
+
+

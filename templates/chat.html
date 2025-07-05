@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chatbot OTcorp</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <div class="chat-wrapper">
+    <header>
+      <h1>CHATBOT OTCORP</h1>
+    </header>
+
+    <div class="messages" id="messages"></div>
+
+    <form id="chat-form" class="input-area">
+      <input
+        type="text"
+        id="chat-input"
+        placeholder="Escribe tu mensaje…"
+        autocomplete="off"
+      />
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('chat-input');
+    const msgs  = document.getElementById('messages');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Usuario
+      const u = document.createElement('div');
+      u.className = 'message user';
+      u.textContent = text;
+      msgs.appendChild(u);
+      input.value = '';
+      msgs.scrollTop = msgs.scrollHeight;
+
+      // Bot
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({message: text})
+      });
+      const {response} = await res.json();
+
+      const b = document.createElement('div');
+      b.className = 'message bot';
+      b.textContent = response;
+      msgs.appendChild(b);
+      msgs.scrollTop = msgs.scrollHeight;
+    });
+  </script>
+</body>
+</html>
