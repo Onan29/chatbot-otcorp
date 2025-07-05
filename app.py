@@ -7,7 +7,7 @@ import os
 
 # Cargar variables de entorno
 load_dotenv()
-API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_KEY = os.getenv("OPENROUTER_API_KEY", "").strip()
 print("API KEY cargada:", API_KEY)
 
 app = Flask(__name__)
